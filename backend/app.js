@@ -1,19 +1,30 @@
 require('dotenv').config();
+
+// Web Imports
+
 const express = require('express');
 const session = require('express-session');
-const passport = require('./config/passport');
-const dbConnect = require('./config/db');
-const errorHandlers = require('./middleware/errorHandlers');
-const corsOptions = require('./middleware/corsOptions');
-const fs = require('fs');
+const cors = require('cors');
 const https = require('https');
 
-// Connect to MongoDB
-dbConnect();
+// Own Imports
 
+const passport = require('./config/passport');
+const db = require('./config/db');
+const errorHandlers = require('./middleware/errorHandlers');
+const corsOptions = require('./middleware/corsOptions');
+const authRoutes = require('./routes/auth');
+const httpsOptions = require('./utils/httpsOptions');
+
+// Connect to MongoDB
+db.connect();
+
+// Create a new Express application
 const app = express();
+
 app.use(express.json());
 
+// Set up HTTPS server options
 app.use(session({
   secret: process.env.SESSION_SECRET, 
   resave: false,
@@ -25,6 +36,7 @@ app.use(session({
   }
 }));
 
+// Set up Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -32,15 +44,10 @@ app.use(errorHandlers);
 
 app.use(cors(corsOptions));
 
-app.use('/login', require('./routes/login'));
-app.use('/register', require('./routes/register'));
-app.use('/logout', require('./routes/logout'));
+// Routes
+app.use('/auth', authRoutes);
 
-const httpsoptions = {
-  key: fs.readFileSync('../ssl/private.key'),
-  cert: fs.readFileSync('../ssl/certificate.crt')
-};
-
-https.createServer(httpsoptions, app).listen(5000, () => {
+// Start HTTPS server
+https.createServer(httpsOptions, app).listen(5000, () => {
   console.log('Server running on port 5000');
 });

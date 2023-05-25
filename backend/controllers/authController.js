@@ -1,0 +1,98 @@
+const jwt = require('jsonwebtoken');
+const User = require('../models/user');
+
+exports.login = async (req, res, next) => {
+  // Validation is done by middleware before reaching here
+
+  const { usernameOrEmail, password } = req.body;
+  
+  const isEmail = /\S+@\S+\.\S+/.test(usernameOrEmail);
+
+  let user;
+
+  if (isEmail) {
+    user = await User.findOne({ email: usernameOrEmail });
+  } else {
+    user = await User.findOne({ username: usernameOrEmail });
+  }
+
+  if (!user) return res.status(400).json({ errors: ['Invalid username or password'] });
+
+  user.comparePassword(password, (err, isMatch) => {
+    if (err) return next(err);
+    if (!isMatch) return res.status(400).json({ errors: ['Invalid username or password'] });
+
+    req.logIn(user, function(err) {
+      if (err) {
+        return next(err);
+      }
+      
+      // Create a token
+      try {
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        return res.json({ token, id: user._id });
+      } catch (err) {
+        console.error('JWT signing error:', err);
+        return res.status(500).json({ status: 'error', code: 'jwt_error', message: err.message });
+      }
+    });
+  });
+};
+
+exports.register = async function (req, res, next) {
+  // Validation is done by middleware before reaching here
+
+  const { username, email, password } = req.body;
+  
+  try {
+    // Ensure user doesn't already exist
+    const existingUser = await User.findOne({ username, email });
+    if (existingUser) {
+      return res.status(409).json({ status: 'error', code: 'user_exists', message: 'Username or email already exists.' });
+    }
+
+    const user = new User({
+      email, username, password
+    });
+  
+    try {
+      const savedUser = await user.save();
+    } catch (err) {
+      if (err.code === 11000) {
+        // This is a duplicate key error
+        return res.status(400).json({ status: 'error', code: 'duplicate_key', message: 'Username or email already exists.' });
+      }
+      // If it's not a duplicate key error, we pass it on to be handled by the global error handler
+      next(err);
+    }
+    
+    // Automatically login the user after register
+    req.login(user, function(err) {
+      if (err) { return next(err); }
+    
+      // Send the token
+      try {
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        return res.status(200).json({ token, id: user._id, status: 'success', code: 'registered' });
+      } catch (err) {
+        console.error('JWT signing error:', err);
+        return res.status(500).json({ status: 'error', code: 'jwt_error', message: err.message });
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.logout = function(req, res){
+    req.logout();
+    req.session.destroy(function(err) {
+      if (err) {
+        console.error('Error : Failed to destroy the session during logout.', err);
+        return next(err);
+      }
+      req.user = null;
+      res.status(200).json({ status: 'success', code: 'logged_out' });
+    });
+  };
+  

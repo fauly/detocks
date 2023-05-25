@@ -1,10 +1,6 @@
-// corsOptions.js
-
 const corsOptions = {
-    origin: '*',
-    credentials: true,
-    optionsSuccessStatus: 200
-  };
-  
-  module.exports = corsOptions;
-  
+  origin: process.env.FRONTEND_URL,
+  credentials: true
+};
+
+module.exports = corsOptions;
