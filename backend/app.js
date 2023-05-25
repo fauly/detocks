@@ -40,7 +40,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(errorHandlers);
+app.use(errorHandlers.handleError);
 
 app.use(cors(corsOptions));
 
