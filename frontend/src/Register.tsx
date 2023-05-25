@@ -18,7 +18,7 @@ const Register: React.FC = () => {
       event.preventDefault();
 
       try {
-        const response = await axios.post('/register', {
+        const response = await axios.post('/auth/register', {
           username,
           email,
           password,
@@ -29,19 +29,23 @@ const Register: React.FC = () => {
         navigate('/'); // navigate to home after successful registration
       } catch (error: any) {
         if (error.response && error.response.status) {
-            switch(error.response.status) {
-                case 400: // Bad Request - usually means duplicate key or other validation errors
-                case 409: // Conflict - usually means duplicate key
-                case 422: // Unprocessable Entity - another common code for validation errors
-                    setErrors(error.response.data.errors); // Assuming the error message is in `data.message`
-                    break;
-                default:
-                    console.error(error);
-            }
+          switch(error.response.status) {
+            case 400: // Bad Request - usually means duplicate key or other validation errors
+            case 409: // Conflict - usually means duplicate key
+            case 422: // Unprocessable Entity - another common code for validation errors
+              if (error.response.data.errors) {
+                setErrors(error.response.data.errors);
+              } else if (error.response.data.message) {
+                setErrors([error.response.data.message]);
+              }
+              break;
+            default:
+              console.error(error);
+          }
         } else {
-            console.error(error);
+          console.error(error);
         }
-    }
+      }
     };
 
   return (

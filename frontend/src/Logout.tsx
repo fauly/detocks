@@ -9,7 +9,7 @@ const Logout: React.FC = () => {
 
   useEffect(() => {
     async function logout() {
-      await axios.post('/logout').then(() => {
+      await axios.get('/auth/logout').then(() => {
         logOut(); // Call the logOut function from AuthContext
         localStorage.removeItem('token'); // Remove the token from local storage
         localStorage.removeItem('user'); // Remove the user data from local storage

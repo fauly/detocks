@@ -46,7 +46,7 @@ exports.register = async function (req, res, next) {
   
   try {
     // Ensure user doesn't already exist
-    const existingUser = await User.findOne({ username, email });
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
       return res.status(409).json({ status: 'error', code: 'user_exists', message: 'Username or email already exists.' });
     }
@@ -56,7 +56,7 @@ exports.register = async function (req, res, next) {
     });
   
     try {
-      const savedUser = await user.save();
+      await user.save();
     } catch (err) {
       if (err.code === 11000) {
         // This is a duplicate key error
@@ -84,15 +84,23 @@ exports.register = async function (req, res, next) {
   }
 };
 
-exports.logout = function(req, res){
-    req.logout();
-    req.session.destroy(function(err) {
+exports.logout = (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      // Handle error
+      console.error(err);
+      return res.status(500).json({ message: 'Error logging out' });
+    }
+    // Destroy session after logging out
+    req.session.destroy((err) => {
       if (err) {
-        console.error('Error : Failed to destroy the session during logout.', err);
-        return next(err);
+        // Handle error
+        console.error(err);
+        return res.status(500).json({ message: 'Error destroying session' });
       }
-      req.user = null;
-      res.status(200).json({ status: 'success', code: 'logged_out' });
+      // Respond to client
+      res.clearCookie('connect.sid');
+      return res.json({ message: 'You are now logged out!' });
     });
-  };
-  
+  });
+};
