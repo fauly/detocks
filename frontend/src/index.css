@@ -12,3 +12,8 @@ body {
     overflow: hidden;
     font-family: 'Quattrocento Sans', sans-serif;
 }
+
+@keyframes someFadeIn {
+    from { opacity: 0;}
+    to { opacity: 1;}
+}
