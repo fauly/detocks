@@ -3,7 +3,6 @@ import React, { useState, useContext, useEffect} from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import AuthContext from './AuthContext';
-import styled from 'styled-components';
 import {ToastContainer,toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FormContainer, PasswordRequirements, AnimatedInput, FieldValid } from './AuthComponents';
