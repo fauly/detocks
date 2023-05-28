@@ -1,6 +1,6 @@
 import React, { useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AuthContext from './AuthContext';
+import AuthContext from './auth/AuthContext';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();

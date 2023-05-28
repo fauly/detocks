@@ -1,4 +1,6 @@
 const { body, validationResult } = require('express-validator');
+const User = require('../models/user');
+
 
 exports.validateLogin = [
   body('usernameOrEmail').trim().notEmpty().withMessage('Username or email is required'),
@@ -38,3 +40,22 @@ exports.validateRegister = [
     next();
   }
 ];
+
+exports.usernameAvailable = async (req, res) => {
+  const enteredUsername = req.query.username;
+
+  if (enteredUsername.length >= 3 && enteredUsername.length <= 16 && /^[a-zA-Z0-9]+$/.test(enteredUsername)) {
+    try {
+      // Perform a database query to check if the username exists
+      const user = await User.findOne({ username: enteredUsername });
+      const isAvailable = !user; // If user is null, the username is available
+      res.json({ isAvailable });
+    } catch (error) {
+      // Handle error
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  } else {
+    res.json({ isAvailable: false });
+  }
+};
