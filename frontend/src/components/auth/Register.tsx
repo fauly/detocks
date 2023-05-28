@@ -27,7 +27,7 @@ const Register: React.FC = () => {
   const [isTypingConfirmPassword, setIsTypingConfirmPassword] = useState(false);
   const [doPasswordsMatch, setDoPasswordsMatch] = useState(false);
 
-  const inputAnimationDelays = [400,  600, 800, 1000, 1200];
+  const inputAnimationDelays = [400, 600, 800, 1000, 1200];
   
   const { logIn } = useContext(AuthContext);
 
@@ -164,8 +164,7 @@ const Register: React.FC = () => {
           onChange={handleUsernameChange} 
           required 
           delay={inputAnimationDelays[0]}
-          style={{position: "relative", display: "inline-block", width: "100%"}}
-        /> 
+         /> 
         <FieldValid isActive={isTypingUsername} isValid={isAvailable} isLoading={isLoading} />
         </div>
         <AnimatedInput 
@@ -222,8 +221,9 @@ const Register: React.FC = () => {
           id="submitButton" 
           type="submit" 
           value="Register" 
-          delay={inputAnimationDelays[4]}/>
-        <span id="needToLogin"> 
+          delay={inputAnimationDelays[4]}
+        />
+        <span id="linkToOtherAuth"> 
           Already have an account? <Link to="/login">Login</Link> 
         </span>
 

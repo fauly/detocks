@@ -1,9 +1,14 @@
 import React, { useState, useContext} from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import AuthContext from './AuthContext';
+import { FormContainer, AnimatedInput, AuthErrors} from './AuthComponents';
+import {ToastContainer,toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { transform } from 'typescript';
 
 const Login: React.FC = () => {
+  // #region Declares
   const navigate = useNavigate();
 
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
@@ -11,6 +16,7 @@ const Login: React.FC = () => {
   const [errors, setErrors] = useState<string[]>([]);
 
   const { logIn } = useContext(AuthContext);
+  // #endregion
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -43,32 +49,52 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      {errors && errors.length > 0 && (
-        <div>
-          <p>Errors:</p>
-          <ul>
-            {errors.map((error, index) => (
-              <li key={index}>{error}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
+    <>
+    <FormContainer>
       <form onSubmit={handleSubmit}>
-        <label>
-          Username or Email:
-          <input type="string" value={usernameOrEmail} onChange={e => setUsernameOrEmail(e.target.value)} />
-        </label>
-        <label>
-          Password:
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
-        </label>
-        <input type="submit" value="Submit" />
+        <h2>Login</h2>
+        <AnimatedInput 
+          type="text" 
+          placeholder="Username or Email"
+          name="usernameOrEmail"
+          autoComplete="username"
+          value={usernameOrEmail} 
+          onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setUsernameOrEmail(e.target.value)} 
+          required 
+          delay={200}
+        /> 
+        <AnimatedInput 
+          type="password" 
+          placeholder="Password"
+          name="password"
+          autoComplete="password"
+          value={password} 
+          onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setPassword(e.target.value)} 
+          required 
+          delay={400}
+        />
+        <div 
+        style={{
+          position: "relative", 
+          width: '100%',
+          display: 'flex',
+          justifyContent: "center",
+          }}> 
+        <AnimatedInput 
+          id="submitButton" 
+          type="submit" 
+          value="Login" 
+          delay={600}
+        />
+        <AuthErrors errors={errors} isActive={errors.length > 0}/>
+        </div>
+        <span id="linkToOtherAuth"> 
+          No account? <Link to="/register">Sign Up</Link> 
+        </span>
       </form>
-      <button onClick={() => navigate('/register')}>No account? Sign Up</button>
-    </div>
+    </FormContainer>
+    <ToastContainer />
+    </>
   );
 };
 

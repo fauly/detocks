@@ -41,7 +41,7 @@ const FormContainer = styled.div`
       font-size: 2.2rem;
       color: #70A0AF;
       letter-spacing: 0.5rem;
-      text-shadow: 0px 0px 8px #33006659;
+      text-shadow: 1px 1px #000, 1.5px 1px #000, 1px 1.5px #000, 1.5px 1.5px #000, 0px 0px 3px #33006659;
     }
 
     form {
@@ -77,6 +77,7 @@ const FormContainer = styled.div`
       width: 100%;
       font-size: 1rem;
       color: #70A0AF;
+      text-shadow: 1px 1px #000;
       transition: all 0.3s ease-in-out;
 
       &:focus {
@@ -115,9 +116,10 @@ const FormContainer = styled.div`
       }
     }
 
-    #needToLogin {
+    #linkToOtherAuth {
       color:white;
       text-transform: uppercase;
+      text-shadow: 1px 1px #000;
 
       animation: fade-in 0.8s ease-in-out forwards;
       animation-delay: 1500ms;
@@ -273,6 +275,42 @@ const PasswordRequirementsStyled = styled.ul<{isActive: boolean}>`
     )
   };
 
+  const AuthErrorsStyled = styled.ul<{isActive: boolean}>`
+  list-style: none;
+  padding: 5px;
+  border-radius: 10px;
+  text-shadow:  1px 1px #000, 1.5px 1px #000, 1px 1.5px #000, 1.5px 1.5px #000;
+  position: absolute;
+  left: 0;
+  top: -55%;
+  color: #fff;
+  width: 100%;
+  z-index: 999;
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-style: italic;
+  text-align: center;
+  transition: opacity 0.3s ease-in-out;
+  opacity: ${props => props.isActive ? '1' : '0'};
+  pointer-events: ${props => props.isActive ? 'all' : 'none'};
+  `
+
+  interface AuthErrorProps {
+    isActive: boolean;
+    errors: string[];
+  }
+
+  const AuthErrors: React.FC<AuthErrorProps> = ({errors, isActive = false}) => {
+    return (
+        <AuthErrorsStyled isActive={isActive}>
+          {errors.map((error, index) => (
+            <li key={index}>{error}</li>
+          ))}
+        </AuthErrorsStyled>
+
+    )
+  };
+
 /*
  * ===============================
  * Exports!
@@ -281,4 +319,4 @@ const PasswordRequirementsStyled = styled.ul<{isActive: boolean}>`
  * and out the door with you...!
  */
 
-export { FormContainer, FieldValid, PasswordRequirements, AnimatedInput };
+export { FormContainer, FieldValid, PasswordRequirements, AnimatedInput, AuthErrors};
