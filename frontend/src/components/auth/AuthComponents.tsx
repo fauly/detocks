@@ -129,7 +129,13 @@ const FormContainer = styled.div`
       }
   `;
 
-const UsernameAvaliable = styled.span<{ isTypingUsername: boolean }>` 
+interface FieldValidProps {
+    isActive: boolean;
+    isLoading?: boolean | undefined;
+    isValid?: boolean | null;
+}
+
+const FieldValidStyle = styled.span<{ isActive: boolean }>` 
   position: absolute;
   top:50%;
   right: 5%;
@@ -146,7 +152,7 @@ const UsernameAvaliable = styled.span<{ isTypingUsername: boolean }>`
   vertical-align: top;
   display: inline;
   opacity: 0.3;
-  animation: ${props => props.isTypingUsername ? 'fadein 0.5s forwards' : 'blur 0.6s forwards'};
+  animation: ${props => props.isActive ? 'fadein 0.5s forwards' : 'blur 0.6s forwards'};
 
   @keyframes fadein {
     from { opacity: 0.3;}
@@ -157,36 +163,18 @@ const UsernameAvaliable = styled.span<{ isTypingUsername: boolean }>`
     from { opacity: 1;}
     to { opacity: 0.3;}
   }
-  `
-  const PasswordsMatch= styled.span<{ isTypingConfirmPassword: boolean }>` 
-  position: absolute;
-  top:50%;
-  right: 5%;
-  z-index: 999;
-  transform: translateY(-50%);
-  font-weight: 900;
-  font-size: 1.5rem;
-  background: #0003;
-  border-radius: 0.7rem;
-  width: 2.2rem;
-  height: 2.2rem;
-  text-align: center;
-  padding-top:  0.1rem;
-  vertical-align: top;
-  display: inline;
-  opacity: 0.3;
-  animation: ${props => props.isTypingConfirmPassword ? 'fadein 0.5s forwards' : 'blur 0.6s forwards'};
+`
 
-  @keyframes fadein {
-    from { opacity: 0.3;}
-    to { opacity: 1;}
-  }
+const FieldValid: React.FC<FieldValidProps> = ({ isActive, isLoading=undefined, isValid=null }) => {
+    return (
+      <FieldValidStyle isActive={isActive}>
+        {isLoading !== undefined && isLoading && <span style={{ color: "#773" }}>...</span>}
+        {isValid === true && (!isLoading || isLoading === undefined) && <span style={{ color: "#4f9c4f" }}>✓</span>}
+        {isValid === false && (!isLoading || isLoading === undefined) && <span style={{ color: "#b86b6b" }}>✕</span>}
+      </FieldValidStyle>
+    );
+};
 
-  @keyframes blur {
-    from { opacity: 1;}
-    to { opacity: 0.3;}
-  }
-  `
 const PasswordRequirements = styled.ul<{isTypingPassword: boolean}>`
   list-style: none;
   padding: 5px;
@@ -229,4 +217,4 @@ const AnimatedInput = styled.input<{ delay: number }>`
   }
 `;
 
-export { FormContainer, UsernameAvaliable, PasswordsMatch, PasswordRequirements, AnimatedInput };
+export { FormContainer, FieldValid, PasswordRequirements, AnimatedInput };

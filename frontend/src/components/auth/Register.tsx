@@ -5,7 +5,7 @@ import AuthContext from './AuthContext';
 import styled from 'styled-components';
 import {ToastContainer,toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { FormContainer, UsernameAvaliable, PasswordsMatch, PasswordRequirements, AnimatedInput } from './AuthComponents';
+import { FormContainer, PasswordRequirements, AnimatedInput, FieldValid } from './AuthComponents';
 
 const Register: React.FC = () => {
 
@@ -46,7 +46,7 @@ const Register: React.FC = () => {
       special: /[@$!%*#?&]/.test(password),
     });
   }, [password]);
-  
+
   const handlePasswordChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const enteredPassword = event.target.value;
     setPassword(enteredPassword);
@@ -167,11 +167,7 @@ const Register: React.FC = () => {
           delay={inputAnimationDelays[0]}
           style={{position: "relative", display: "inline-block", width: "100%"}}
         /> 
-        <UsernameAvaliable isTypingUsername={isTypingUsername}>
-          {isLoading && <span style={{color: "#773"}}>...</span>}
-          {isAvailable === true && !isLoading && <span style={{color: "#4f9c4f"}}>✓</span>}
-          {isAvailable === false && !isLoading && <span style={{color: "#b86b6b"}}>✕</span>}
-        </UsernameAvaliable>
+        <FieldValid isActive={isTypingUsername} isValid={isAvailable} />
         </div>
         <AnimatedInput 
           type="email" 
@@ -236,11 +232,7 @@ const Register: React.FC = () => {
           required
           delay={inputAnimationDelays[3]}
         />
-        <PasswordsMatch 
-        isTypingConfirmPassword={isTypingConfirmPassword}>
-          {doPasswordsMatch === true && <span style={{color: "#4f9c4f"}}>✓</span>}
-          {doPasswordsMatch === false && <span style={{color: "#b86b6b"}}>✕</span>}
-        </PasswordsMatch>
+        <FieldValid isActive={isTypingConfirmPassword} isValid={doPasswordsMatch} />
         </div>
         <AnimatedInput id="submitButton" type="submit" value="Register" delay={inputAnimationDelays[4]}/>
         <span id="needToLogin"> 
