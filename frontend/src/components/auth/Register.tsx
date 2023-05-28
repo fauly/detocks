@@ -1,4 +1,4 @@
-import React, { useState, useContext} from 'react';
+import React, { useState, useContext, useEffect} from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import AuthContext from './AuthContext';
@@ -164,7 +164,37 @@ const UsernameAvaliable = styled.span<{ isTypingUsername: boolean }>`
     to { opacity: 0.3; transform: translateY(-50%) scaleX(1) }
   }
   `
+  const PasswordsMatch= styled.span<{ isTypingConfirmPassword: boolean }>` 
+  position: absolute;
+  top:50%;
+  right: 5%;
+  z-index: 999;
+  transform: translateY(-50%);
+  font-weight: 900;
+  font-size: 1.5rem;
+  background: #0003;
+  border-radius: 0.7rem;
+  width: 2.2rem;
+  height: 2.2rem;
+  text-align: center;
+  padding-top:  0.1rem;
+  vertical-align: top;
+  display: inline;
+  opacity: 0.3;
+  animation: ${props => props.isTypingConfirmPassword ? 'fadein 0.5s forwards' : 'blur 0.6s forwards'};
 
+  @keyframes fadein {
+    from { opacity: 0.3; transform: translateY(-50%) scaleX(1); }
+    to { opacity: 1; transform: translateY(-50%) scaleX(1); }
+  }
+
+  @keyframes blur {
+    from { opacity: 1; transform: translateY(-50%) scaleX(1) }
+    to { opacity: 0.3; transform: translateY(-50%) scaleX(1) }
+  }
+  `
+
+  
 const AnimatedInput = styled.input<{ delay: number }>`
   /* ...other CSS styles... */
 
@@ -199,9 +229,31 @@ const Register: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isTypingUsername, setIsTypingUsername] = useState(false);
 
+  const [isTypingPassword, setIsTypingPassword] = useState(false);
+  const [isTypingConfirmPassword, setIsTypingConfirmPassword] = useState(false);
+  const [doPasswordsMatch, setDoPasswordsMatch] = useState(false);
+
   const inputAnimationDelays = [400,  600, 800, 1000, 1200];
   
   const { logIn } = useContext(AuthContext);
+
+  const [passwordErrors, setPasswordErrors] = useState({
+    length: false,
+    uppercase: false,
+    lowercase: false,
+    number: false,
+    special: false,
+  });
+
+  useEffect(() => {
+    setPasswordErrors({
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[@$!%*#?&]/.test(password),
+    });
+  }, [password]);
 
   // const chords = [
   //   // 8 characters
@@ -410,24 +462,78 @@ const Register: React.FC = () => {
           required 
           delay={inputAnimationDelays[1]}
         />
+        <div style={{
+          position: "relative", 
+          width: '100%'
+        }
+        }>
         <AnimatedInput 
           type="password" 
           placeholder="Password"
           name="password"
           value={password}
+          onFocus={() => setIsTypingPassword(true)}
+          onBlur={() => setIsTypingPassword(false)}
           onChange={handlePasswordChange} 
           required 
           delay={inputAnimationDelays[2]}
         />
+        <ul style={{
+          listStyle: "none", 
+          padding: '5px',
+          borderRadius: '5px',
+          boxShadow: '0px 0px 5px 0px #ccc',
+          backdropFilter: 'blur(50px)',
+          position: 'absolute',
+          left: '0',
+          top: '110%',
+          backgroundColor: '#18121d63',
+          color: "#fff",
+          width: '100%',
+          zIndex: 999,
+          fontSize: '0.8rem',
+          fontWeight: '500',
+          opacity: isTypingPassword ? '1' : '0',
+          transition: 'opacity 0.3s ease-in-out',
+        }} 
+        >
+        <li>
+          {passwordErrors.length ? '✅' : '❌'} At least 8 characters long
+        </li>
+        <li>
+          {passwordErrors.uppercase ? '✅' : '❌'} Contains an uppercase letter
+        </li>
+        <li>
+          {passwordErrors.lowercase ? '✅' : '❌'} Contains a lowercase letter
+        </li>
+        <li>
+          {passwordErrors.number ? '✅' : '❌'} Contains a number
+        </li>
+        <li>
+          {passwordErrors.special ? '✅' : '❌'} Contains a special character '@$!%*#?&'
+        </li>
+        </ul>
+        </div>
+        <div style={{
+          position: "relative", 
+          width: '100%'}}>
         <AnimatedInput
           type="password"
           placeholder="Confirm Password"
           name="confirmPassword"
           value={confirmPassword}
+          onFocus={() => setIsTypingConfirmPassword(true)}
+          onBlur={() => setIsTypingConfirmPassword(false)}
           onChange={handleConfirmPasswordChange}
           required
           delay={inputAnimationDelays[3]}
+          style={{position: "relative", display: "inline-block", width: "100%"}}
         />
+        <PasswordsMatch isTypingConfirmPassword={isTypingConfirmPassword}>
+          {doPasswordsMatch === true && <span style={{color: "#4f9c4f"}}>✓</span>}
+          {doPasswordsMatch === false && <span style={{color: "#b86b6b"}}>✕</span>}
+        </PasswordsMatch>
+        </div>
         <AnimatedInput id="submitButton" type="submit" value="Register" delay={inputAnimationDelays[4]}/>
         <span id="needToLogin"> 
           Already have an account? <Link to="/login">Login</Link> 
