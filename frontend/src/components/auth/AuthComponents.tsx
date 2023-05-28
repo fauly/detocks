@@ -1,5 +1,17 @@
+/*
+ * ===============================
+ * Imports!
+ * ===============================
+ */
 import styled from  'styled-components';
 import React from 'react';
+
+/*
+ * ===============================
+ * All Stylings of Components
+ * ===============================
+ * Here to contain the entire AuthForm - fills screen with repeating gradient.
+ */
 
 const FormContainer = styled.div`
     height : 100vh;
@@ -129,73 +141,6 @@ const FormContainer = styled.div`
       }
   `;
 
-interface FieldValidProps {
-    isActive: boolean;
-    isLoading?: boolean | undefined;
-    isValid?: boolean | null;
-}
-
-const FieldValidStyle = styled.span<{ isActive: boolean }>` 
-  position: absolute;
-  top:50%;
-  right: 5%;
-  z-index: 999;
-  transform: translateY(-50%);
-  font-weight: 900;
-  font-size: 1.5rem;
-  background: #0003;
-  border-radius: 0.7rem;
-  width: 2.2rem;
-  height: 2.2rem;
-  text-align: center;
-  padding-top:  0.1rem;
-  vertical-align: top;
-  display: inline;
-  opacity: 0.3;
-  animation: ${props => props.isActive ? 'fadein 0.5s forwards' : 'blur 0.6s forwards'};
-
-  @keyframes fadein {
-    from { opacity: 0.3;}
-    to { opacity: 1; }
-  }
-
-  @keyframes blur {
-    from { opacity: 1;}
-    to { opacity: 0.3;}
-  }
-`
-
-const FieldValid: React.FC<FieldValidProps> = ({ isActive, isLoading=undefined, isValid=null }) => {
-    return (
-      <FieldValidStyle isActive={isActive}>
-        {isLoading !== undefined && isLoading && <span style={{ color: "#773" }}>...</span>}
-        {isValid === true && (!isLoading || isLoading === undefined) && <span style={{ color: "#4f9c4f" }}>✓</span>}
-        {isValid === false && (!isLoading || isLoading === undefined) && <span style={{ color: "#b86b6b" }}>✕</span>}
-      </FieldValidStyle>
-    );
-};
-
-const PasswordRequirements = styled.ul<{isTypingPassword: boolean}>`
-  list-style: none;
-  padding: 5px;
-  border-radius: 5px;
-  box-shadow: 0px 0px 5px 0px #ccc;
-  backdrop-filter: blur(50px);
-  position: absolute;
-  left: 0;
-  top: 110%;
-  background-color: #18121d63;
-  color: #fff;
-  width: 100%;
-  z-index: 999;
-  font-size: 0.8rem;
-  font-weight: 500;
-  transition: opacity 0.3s ease-in-out;
-  opacity: ${props => props.isTypingPassword ? '1' : '0'};
-  transition: 'opacity 0.3s ease-in-out';
-  pointer-events: ${props => props.isTypingPassword ? 'all' : 'none'};
-  `
-  
 const AnimatedInput = styled.input<{ delay: number }>`
   position: "relative";
   display: "inline-block";
@@ -216,5 +161,124 @@ const AnimatedInput = styled.input<{ delay: number }>`
     }
   }
 `;
+
+/*
+ * ===============================
+ * FieldValid Component
+ * ===============================
+ */
+
+const FieldValidStyle = styled.span<{ isActive: boolean }>` 
+position: absolute;
+top:50%;
+right: 5%;
+z-index: 999;
+transform: translateY(-50%);
+font-weight: 900;
+font-size: 1.5rem;
+background: #0003;
+border-radius: 0.7rem;
+width: 2.2rem;
+height: 2.2rem;
+text-align: center;
+padding-top:  0.1rem;
+  vertical-align: top;
+  display: inline;
+  opacity: 0.3;
+  animation: ${props => props.isActive ? 'fadein 0.5s forwards' : 'blur 0.6s forwards'};
+  
+  @keyframes fadein {
+      from { opacity: 0.3;}
+      to { opacity: 1; }
+    }
+    
+  @keyframes blur {
+    from { opacity: 1;}
+    to { opacity: 0.3;}
+  }
+  `
+  interface FieldValidProps {
+      isActive: boolean;
+      isLoading?: boolean | undefined;
+      isValid?: boolean | null;
+  }
+
+const FieldValid: React.FC<FieldValidProps> = ({ isActive, isLoading=undefined, isValid=null }) => {
+    return (
+      <FieldValidStyle isActive={isActive}>
+        {isLoading !== undefined && isLoading && <span style={{ color: "#773" }}>...</span>}
+        {isValid === true && (!isLoading || isLoading === undefined) && <span style={{ color: "#4f9c4f" }}>✓</span>}
+        {isValid === false && (!isLoading || isLoading === undefined) && <span style={{ color: "#b86b6b" }}>✕</span>}
+      </FieldValidStyle>
+    );
+};
+
+/*
+ * ===============================
+ * Password Requirement Component
+ * ===============================
+ */
+
+const PasswordRequirementsStyled = styled.ul<{isActive: boolean}>`
+  list-style: none;
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px 0px #ccc;
+  backdrop-filter: blur(50px);
+  position: absolute;
+  left: 0;
+  top: 110%;
+  background-color: #18121d63;
+  color: #fff;
+  width: 100%;
+  z-index: 999;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: opacity 0.3s ease-in-out;
+  opacity: ${props => props.isActive ? '1' : '0'};
+  transition: 'opacity 0.3s ease-in-out';
+  pointer-events: ${props => props.isActive ? 'all' : 'none'};
+  `
+
+  interface PasswordReqProps {
+    isActive: boolean, 
+    passwordErrors: {
+      uppercase: boolean,
+      lowercase: boolean,
+      number: boolean,
+      special: boolean,
+      length: boolean
+    }
+  }
+
+  const PasswordRequirements: React.FC<PasswordReqProps> = ({passwordErrors, isActive = false}) => {
+    return (
+        <PasswordRequirementsStyled isActive={isActive}>
+            <li>
+            {passwordErrors.length ? '✅' : '❌'} At least 8 characters long
+            </li>
+            <li>
+            {passwordErrors.uppercase ? '✅' : '❌'} Contains an uppercase letter
+            </li>
+            <li>
+            {passwordErrors.lowercase ? '✅' : '❌'} Contains a lowercase letter
+            </li>
+            <li>
+            {passwordErrors.number ? '✅' : '❌'} Contains a number
+            </li>
+            <li>
+            {passwordErrors.special ? '✅' : '❌'} Contains a special character '@$!%*#?&'
+            </li>
+        </PasswordRequirementsStyled>
+    )
+  };
+
+/*
+ * ===============================
+ * Exports!
+ * ===============================
+ * 
+ * and out the door with you...!
+ */
 
 export { FormContainer, FieldValid, PasswordRequirements, AnimatedInput };

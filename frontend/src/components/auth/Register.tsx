@@ -1,3 +1,4 @@
+// #region Imports
 import React, { useState, useContext, useEffect} from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
@@ -6,9 +7,11 @@ import styled from 'styled-components';
 import {ToastContainer,toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FormContainer, PasswordRequirements, AnimatedInput, FieldValid } from './AuthComponents';
+// #endregion
 
 const Register: React.FC = () => {
 
+  // #region Declerations
   const navigate = useNavigate();    
 
   const [username, setUsername] = useState('');
@@ -17,7 +20,7 @@ const Register: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null);
-  const [isAvailable, setIsAvailable] = useState(null);
+  const [isAvailable, setIsAvailable] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isTypingUsername, setIsTypingUsername] = useState(false);
 
@@ -36,6 +39,7 @@ const Register: React.FC = () => {
     number: false,
     special: false,
   });
+  // #endregion
 
   useEffect(() => {
     setPasswordErrors({
@@ -47,6 +51,7 @@ const Register: React.FC = () => {
     });
   }, [password]);
 
+  // #region Handles
   const handlePasswordChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const enteredPassword = event.target.value;
     setPassword(enteredPassword);
@@ -85,14 +90,7 @@ const Register: React.FC = () => {
     const handleSubmit = async (event: React.FormEvent) => {
       event.preventDefault();
 
-      if(password!==confirmPassword) {
-        toast.error("Passwords don't match", {
-          position: "top-center",
-          autoClose: 5000,
-          pauseOnHover: true,
-          draggable: true,
-          theme: "light",
-        }); 
+      if(password!==confirmPassword) { 
         return;
       }
 
@@ -144,6 +142,7 @@ const Register: React.FC = () => {
         }
       }
     };
+  // #endregion
 
   return (
     <>
@@ -167,7 +166,7 @@ const Register: React.FC = () => {
           delay={inputAnimationDelays[0]}
           style={{position: "relative", display: "inline-block", width: "100%"}}
         /> 
-        <FieldValid isActive={isTypingUsername} isValid={isAvailable} />
+        <FieldValid isActive={isTypingUsername} isValid={isAvailable} isLoading={isLoading} />
         </div>
         <AnimatedInput 
           type="email" 
@@ -195,23 +194,7 @@ const Register: React.FC = () => {
           required 
           delay={inputAnimationDelays[2]}
         />
-        <PasswordRequirements isTypingPassword={isTypingPassword}>
-        <li>
-          {passwordErrors.length ? '✅' : '❌'} At least 8 characters long
-        </li>
-        <li>
-          {passwordErrors.uppercase ? '✅' : '❌'} Contains an uppercase letter
-        </li>
-        <li>
-          {passwordErrors.lowercase ? '✅' : '❌'} Contains a lowercase letter
-        </li>
-        <li>
-          {passwordErrors.number ? '✅' : '❌'} Contains a number
-        </li>
-        <li>
-          {passwordErrors.special ? '✅' : '❌'} Contains a special character '@$!%*#?&'
-        </li>
-        </PasswordRequirements>
+        <PasswordRequirements isActive={isTypingPassword} passwordErrors={passwordErrors} />
         </div>
         <div style={{
           position: "relative", 
