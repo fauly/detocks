@@ -149,7 +149,8 @@ const Register: React.FC = () => {
     <FormContainer>
       <form onSubmit={handleSubmit}>
         <h2>Register</h2>
-        <div style={{
+        <div 
+        style={{
           position: "relative", 
           width: '100%'
           }}> 
@@ -196,7 +197,8 @@ const Register: React.FC = () => {
         />
         <PasswordRequirements isActive={isTypingPassword} passwordErrors={passwordErrors} />
         </div>
-        <div style={{
+        <div 
+        style={{
           position: "relative", 
           width: '100%',
           animation:'someFadeIn 0.5s forwards',
@@ -217,7 +219,11 @@ const Register: React.FC = () => {
         />
         <FieldValid isActive={isTypingConfirmPassword} isValid={doPasswordsMatch} />
         </div>
-        <AnimatedInput id="submitButton" type="submit" value="Register" delay={inputAnimationDelays[4]}/>
+        <AnimatedInput 
+          id="submitButton" 
+          type="submit" 
+          value="Register" 
+          delay={inputAnimationDelays[4]}/>
         <span id="needToLogin"> 
           Already have an account? <Link to="/login">Login</Link> 
         </span>
