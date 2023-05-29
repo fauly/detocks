@@ -23,7 +23,7 @@ const Home: React.FC = () => {
     </div>
     <button onClick={() => navigate('/logout')}>Logout</button>
     <SendBox />
-    <ChatWorld data={}/>
+    <ChatWorld data={[]}/>
     </>
   );
 };
