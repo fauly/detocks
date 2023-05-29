@@ -1,8 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
-const ChatWorld = ({ data }) => {
-  const ref = useRef();
+interface SphereData {
+    [key: string]: any;
+}
+  
+interface ChatWorldProps {
+    data: SphereData[];
+}   
+
+const ChatWorld: React.FC<ChatWorldProps> = ({ data }) => {
+    const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const scene = new THREE.Scene();
