@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const validation = require('../middleware/validation');
-const Sphere = require('./models/sphere');
+const Sphere = require('../models/sphere');
 
 router.get('/spheres', async (req, res) => {
   try {

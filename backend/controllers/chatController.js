@@ -1,35 +1,31 @@
-const socketio = require('socket.io');
-const Sphere = require('./models/sphere');
+const Message = require('../models/message');
+const Sphere = require('../models/sphere');
+const validationMiddleware = require('../middleware/validation');
+const { v4: uuidv4 } = require('uuid');
 
-module.exports.listen = function(app) {
-  io = socketio(app);
+exports.handleNewMessage = [
+  validationMiddleware.validateNewMessage,
+  async (req, res, next) => {
+    const { content, username, sphereId } = req.body;
 
-  io.on('connection', (socket) => {
-    console.log('New client connected');
-
-    // Listen for chat message event
-    socket.on('chat message', async (msg) => {
-      // Save the message to the database
-      const sphere = new Sphere({
-        uniqueID: socket.id,
-        username: msg.username,
-        '3dVector': msg['3dVector'],
-        '3dVelocity': msg['3dVelocity'],
-        isConnected: true,
-        isTyping: false,
-        newMessages: msg.newMessages
+    try {
+      // Create a new message entry in the database
+      const newMessage = new Message({
+        uniqueID: uuidv4(),
+        username: username,
+        content: content,
+        sphereId: sphereId,
       });
+      await newMessage.save();
 
+      // Find the sphere for the user and update it with the new message
+      const sphere = await Sphere.findOne({ uniqueID: sphereId });
+      sphere.newMessages.push(newMessage);
       await sphere.save();
 
-      // Emit the message to all clients
-      io.emit('chat message', msg);
-    });
-
-    socket.on('disconnect', () => {
-      console.log('Client disconnected');
-    });
-  });
-
-  return io;
-};
+      res.status(200).send('Message processed');
+    } catch (error) {
+      next(error);
+    }
+  },
+];

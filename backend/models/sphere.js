@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-import Message from  './message';
+const Message = require('./message');
 
 const SphereSchema = new mongoose.Schema({
   uniqueID: { type: String, required: true, unique: true },

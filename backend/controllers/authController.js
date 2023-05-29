@@ -1,5 +1,8 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const Sphere = require('../models/sphere'); 
+const { v4: uuidv4 } = require('uuid');
+
 
 exports.login = async (req, res, next) => {
   // Validation is done by middleware before reaching here
@@ -29,8 +32,8 @@ exports.login = async (req, res, next) => {
       
       // Create a token
       try {
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        return res.json({ token, id: user._id });
+        const token = jwt.sign({ UID: user.uniqueID }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        return res.json({ token, UID: user.uniqueID });
       } catch (err) {
         console.error('JWT signing error:', err);
         return res.status(500).json({ status: 'error', code: 'jwt_error', message: err.message });
@@ -51,12 +54,15 @@ exports.register = async function (req, res, next) {
       return res.status(409).json({ status: 'error', code: 'user_exists', message: 'Username or email already exists.' });
     }
 
-    const user = new User({
-      email, username, password
-    });
+    const thisUniqueID = uuidv4();
+    const user = new User({ email:email, username:username, password:password, uniqueID: thisUniqueID });
   
+    const sphere = new Sphere({ username: username, uniqueID: thisUniqueID });
+
     try {
       await user.save();
+      // Save the sphere to the database
+      await sphere.save();
     } catch (err) {
       if (err.code === 11000) {
         // This is a duplicate key error
@@ -72,8 +78,8 @@ exports.register = async function (req, res, next) {
     
       // Send the token
       try {
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        return res.status(200).json({ token, id: user._id, status: 'success', code: 'registered' });
+        const token = jwt.sign({ UID: user.uniqueID }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        return res.status(200).json({ token, UID: user.uniqueID, status: 'success', code: 'registered' });
       } catch (err) {
         console.error('JWT signing error:', err);
         return res.status(500).json({ status: 'error', code: 'jwt_error', message: err.message });

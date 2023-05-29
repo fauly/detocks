@@ -1,10 +1,6 @@
 import React, {useState} from 'react';
-import io from 'socket.io-client';
 import styled from 'styled-components';
-
-const reactServer = process.env.REACT_SERVER || 'https://localhost:5000';
-
-const socket = io(reactServer);
+import axios from 'axios';
 
 const SendBoxContainer = styled.div`
     display: flex;
@@ -27,30 +23,45 @@ const SendBoxContainer = styled.div`
 const SendBox = () => {
     const [message, setMessage] = useState('');
   
-    const sendMessage = (event: React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleSubmit = async (event: { preventDefault: () => void; }) => {
       event.preventDefault();
-  
-      if (message) {
-        // Connect to the server
-        const socket = io(reactServer);
-  
-        // Emit the chat message event
-        socket.emit('chat message', message);
-  
-        // Clear the input
+    
+      try {
+        // Send the message to the server
+        const response = await axios.post('/chat/messages', {
+          content: message,
+          username: 'username', // Replace with the actual username
+          sphereId: 'sphereId', // Replace with the actual sphere ID
+        });
+    
+        // Handle the server's response
+        if (response.status === 200) {
+          console.log('Message sent successfully');
+          // Update the UI to show that the message was sent successfully
+        } else {
+          console.error('Failed to send message:', response.status);
+          // Update the UI to show an error message
+        }
+    
+        // Clear the input field
         setMessage('');
+      } catch (error) {
+        console.error('Failed to send message:', error);
+        // Update the UI to show an error message
       }
     };
   
     return (
       <SendBoxContainer>
-        <input
-          type="text"
-          value={message}
-          onChange={(event) => setMessage(event.target.value)}
-          onKeyDown={(event) => (event.key === 'Enter' ? sendMessage(event) : null)}
-        />
-        <button onClick={(event) => sendMessage(event)}>Send</button>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            value={message}
+            onChange={(event) => setMessage(event.target.value)}
+            placeholder="Type your message here"
+          />
+          <button type="submit">Send</button>
+        </form>
       </SendBoxContainer>
     );
   };

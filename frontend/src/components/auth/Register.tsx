@@ -101,7 +101,7 @@ const Register: React.FC = () => {
         });
 
         localStorage.setItem('token', response.data.token);
-        const user = { username, email };
+        const user = { UID: response.data.UID } // Include id in user object
         logIn(user); // update the login state
         navigate('/'); // navigate to home after successful registration
 

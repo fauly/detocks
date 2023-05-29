@@ -17,6 +17,7 @@ const errorHandlers = require('./middleware/errorHandlers');
 const corsOptions = require('./middleware/corsOptions');
 const authRoutes = require('./routes/auth');
 const apiRoutes = require('./routes/api');
+const chatRoutes = require('./routes/chat');
 const httpsOptions = require('./utils/httpsOptions');
 
 // Connect to MongoDB
@@ -50,6 +51,7 @@ app.use(cors(corsOptions));
 // Routes
 app.use('/auth', authRoutes);
 app.use('/api', apiRoutes);
+app.use('/chat', chatRoutes);
 
 // Setup/Start HTTPS server
 
@@ -57,7 +59,3 @@ const httpsServer = https.createServer(httpsOptions, app)
 httpsServer.listen(process.env.HTTPS_PORT, () => {
   console.log('Server running on port ' + process.env.HTTPS_PORT);
 });
-
-// Setup Socket.io
-
-const io = chatController.listen(httpsServer);

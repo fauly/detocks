@@ -1,6 +1,15 @@
 const { body, validationResult } = require('express-validator');
 const User = require('../models/user');
 
+exports.validateNewMessage = (req, res, next) => {
+  const { message, username } = req.body;
+
+  if (typeof message === 'string' && message.length > 0 && typeof username === 'string' && username.length > 0) {
+    next();
+  } else {
+    res.status(400).send('Invalid request data');
+  }
+};
 
 exports.validateLogin = [
   body('usernameOrEmail').trim().notEmpty().withMessage('Username or email is required'),
