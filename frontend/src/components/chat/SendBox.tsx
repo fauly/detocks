@@ -29,9 +29,9 @@ const SendBox = () => {
       try {
         // Send the message to the server
         const response = await axios.post('/chat/messages', {
-          content: message,
-          username: 'username', // Replace with the actual username
-          sphereId: 'sphereId', // Replace with the actual sphere ID
+          username: 'username',
+          UserUID: 'uniqueID',
+          content:  message,
         });
     
         // Handle the server's response

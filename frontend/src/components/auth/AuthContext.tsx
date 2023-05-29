@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logIn = ({UID, token}: {UID: string; token: string; }) => {
     setIsLoggedIn(true);
-    localStorage.setItem('UID', JSON.stringify(UID)); // Store user data in local storage
+    localStorage.setItem('UID', UID); // Store user data in local storage
     localStorage.setItem('token', token);
   };
 
