@@ -31,7 +31,14 @@ const SendBox = () => {
       event.preventDefault();
   
       if (message) {
-        socket.emit('sendMessage', message, () => setMessage(''));
+        // Connect to the server
+        const socket = io(reactServer);
+  
+        // Emit the chat message event
+        socket.emit('chat message', message);
+  
+        // Clear the input
+        setMessage('');
       }
     };
   

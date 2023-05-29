@@ -1,25 +1,33 @@
 const socketio = require('socket.io');
+const Sphere = require('./models/sphere');
 
 module.exports.listen = function(app) {
-  const io = socketio(app, {
-    cors: {
-      origin: "*", // Allow all origins
-      methods: ["GET", "POST"], // Allow GET and POST requests
-      credentials: true // Allow credentials (cookies, authorization headers, TLS client certificates, etc.)
-    }
-  });
-  io.on('connection', (socket) => {
-    console.log('New connection');
+  io = socketio(app);
 
-    socket.on('sendMessage', (message, callback) => {
-        console.log(message);
-        
-        io.emit('message', { user: 'user', text: message });
-        callback(); // This will clear the message text box in the client's UI
+  io.on('connection', (socket) => {
+    console.log('New client connected');
+
+    // Listen for chat message event
+    socket.on('chat message', async (msg) => {
+      // Save the message to the database
+      const sphere = new Sphere({
+        uniqueID: socket.id,
+        username: msg.username,
+        '3dVector': msg['3dVector'],
+        '3dVelocity': msg['3dVelocity'],
+        isConnected: true,
+        isTyping: false,
+        newMessages: msg.newMessages
+      });
+
+      await sphere.save();
+
+      // Emit the message to all clients
+      io.emit('chat message', msg);
     });
 
     socket.on('disconnect', () => {
-      console.log('User had left');
+      console.log('Client disconnected');
     });
   });
 

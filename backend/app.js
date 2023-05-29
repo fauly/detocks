@@ -6,7 +6,8 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 const https = require('https');
-const socketio = require('./controllers/chatController');
+const chatController = require('./controllers/chatController');
+
 
 // Own Imports
 
@@ -59,4 +60,4 @@ httpsServer.listen(process.env.HTTPS_PORT, () => {
 
 // Setup Socket.io
 
-const io = socketio.listen(httpsServer);
+const io = chatController.listen(httpsServer);
