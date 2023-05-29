@@ -3,9 +3,6 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import AuthContext from './AuthContext';
 import { FormContainer, AnimatedInput, AuthErrors} from './AuthComponents';
-import {ToastContainer,toast} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { transform } from 'typescript';
 
 const Login: React.FC = () => {
   // #region Declares
@@ -23,9 +20,7 @@ const Login: React.FC = () => {
   
     try {
       const response = await axios.post('/auth/login', { usernameOrEmail, password });
-      localStorage.setItem('token', response.data.token);
-      const user = { UID: response.data.UID } // Include id in user object
-      logIn(user); // update the login state
+      logIn({ UID: response.data.UID, token: response.data.token }); // update the login state
       navigate('/');
     } catch (error: any) {
       if (error.response && error.response.status) {
@@ -93,7 +88,6 @@ const Login: React.FC = () => {
         </span>
       </form>
     </FormContainer>
-    <ToastContainer />
     </>
   );
 };

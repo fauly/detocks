@@ -2,14 +2,14 @@ import React, { createContext, useState, useEffect } from 'react';
 
 interface AuthContextProps {
   isLoggedIn: boolean;
-  user: any;
+  userID: any;
   logIn: (user: any) => void;
   logOut: () => void;
 }
 
 const AuthContext = createContext<AuthContextProps>({
   isLoggedIn: false,
-  user: null,
+  userID: null,
   logIn: () => {},
   logOut: () => {},
 });
@@ -20,31 +20,33 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!localStorage.getItem('token'));
-  const [user, setUser] = useState<any>(null);
+  const [userID, setUserID] = useState<any>(null);
 
   // ...
 
+  // On load check if there is user data from local storage here
   useEffect(() => {
-    // load user data from local storage (or your preferred storage) here
-    const savedUser = localStorage.getItem('user');
+    const savedUser = localStorage.getItem('UID');
     if (savedUser) {
       setIsLoggedIn(true);
-      setUser(JSON.parse(savedUser));
+      setUserID(JSON.parse(savedUser));
     }
   }, []);
 
-  const logIn = (user: { UID: string }) => {
+  const logIn = ({UID, token}: {UID: string; token: string; }) => {
     setIsLoggedIn(true);
-    setUser(user);
-    localStorage.setItem('user', JSON.stringify(user)); // Store user data in local storage
-};
+    localStorage.setItem('UID', JSON.stringify(UID)); // Store user data in local storage
+    localStorage.setItem('token', token);
+  };
 
-
-  
-  const logOut = () => setIsLoggedIn(false);
+  const logOut = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem('token'); // Remove the token from local storage
+    localStorage.removeItem('UID'); // Remove the user data from local storage
+  }
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, logIn, logOut }}>
+    <AuthContext.Provider value={{ isLoggedIn, userID, logIn, logOut }}>
       {children}
     </AuthContext.Provider>
   );
