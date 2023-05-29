@@ -14,6 +14,7 @@ https://raw.githubusercontent.com/fauly/detocks/main/frontend/src/App.test.tsx
 https://raw.githubusercontent.com/fauly/detocks/main/frontend/src/App.tsx
 https://raw.githubusercontent.com/fauly/detocks/main/frontend/src/AppRoutes.tsx
 https://raw.githubusercontent.com/fauly/detocks/main/frontend/src/components/Home.tsx
+https://raw.githubusercontent.com/fauly/detocks/main/frontend/src/components/auth/AuthComponents.tsx
 https://raw.githubusercontent.com/fauly/detocks/main/frontend/src/components/auth/AuthContext.tsx
 https://raw.githubusercontent.com/fauly/detocks/main/frontend/src/components/auth/Login.tsx
 https://raw.githubusercontent.com/fauly/detocks/main/frontend/src/components/auth/Logout.tsx

@@ -6,6 +6,7 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 const https = require('https');
+const socketio = require('./controllers/chatController');
 
 // Own Imports
 
@@ -49,7 +50,13 @@ app.use(cors(corsOptions));
 app.use('/auth', authRoutes);
 app.use('/api', apiRoutes);
 
-// Start HTTPS server
-https.createServer(httpsOptions, app).listen(process.env.HTTPS_PORT, () => {
+// Setup/Start HTTPS server
+
+const httpsServer = https.createServer(httpsOptions, app)
+httpsServer.listen(process.env.HTTPS_PORT, () => {
   console.log('Server running on port ' + process.env.HTTPS_PORT);
 });
+
+// Setup Socket.io
+
+const io = socketio.listen(httpsServer);

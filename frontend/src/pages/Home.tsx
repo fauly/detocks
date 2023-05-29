@@ -1,6 +1,7 @@
 import React, { useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AuthContext from './auth/AuthContext';
+import AuthContext from '../components/auth/AuthContext';
+import SendBox from '../components/chat/SendBox';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -15,9 +16,13 @@ const Home: React.FC = () => {
 
 
   return (
+    <>
     <div className="home">
       Welcome to Detocks!
     </div>
+    <button onClick={() => navigate('/logout')}>Logout</button>
+    <SendBox />
+    </>
   );
 };
 
